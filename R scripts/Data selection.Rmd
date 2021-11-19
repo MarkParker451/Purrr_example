@@ -2,6 +2,9 @@
 title: "Untitled"
 output: html_document
 ---
+# PURPOSE
+The only purpose of this script is to find a bunch of indicators that I can use in a purrr worked example.
+
 
 ```{r}
 library(fingertipsR)
@@ -9,103 +12,39 @@ library(dplyr)
 library(purrr)
 ```
 
-# One time cript to identify suitable indicators to work with
+
+# One time script to identify suitable indicators to work with
 ```{r}
-# inds_by_area <- indicator_areatypes()
-# area_types <- area_types()
-# unique_inds <- indicators_unique()
-# 
-# ind_and_area_data <- inds_by_area %>% 
-#   left_join(area_types) %>% 
-#   left_join(unique_inds) %>%
-#   select(IndicatorID, 
-#          IndicatorName,
-#          AreaTypeID,
-#          AreaTypeName,
-#   ) %>% 
-#   distinct()
-# 
-# # find indicators which are available for Ward, LTLA, UTLA, and Region
-# inds_all_area_types <- ind_and_area_data %>% 
-#   filter(IndicatorID %in% subset(ind_and_area_data,AreaTypeName == "Ward",IndicatorID)$IndicatorID 
-#          & IndicatorID %in% subset(ind_and_area_data,AreaTypeName == "Upper tier local authorities (post 4/21)",IndicatorID)$IndicatorID 
-#          & IndicatorID %in% subset(ind_and_area_data,AreaTypeName == "Lower tier local authorities (post 4/21)",IndicatorID)$IndicatorID 
-#          & IndicatorID %in% subset(ind_and_area_data,AreaTypeName == "Government Office Region",IndicatorID)$IndicatorID
-#   )
+inds_by_area <- indicator_areatypes()
+area_types <- area_types()
+unique_inds <- indicators_unique()
+
+ind_and_area_data <- inds_by_area %>%
+  left_join(area_types) %>%
+  left_join(unique_inds) %>%
+  select(IndicatorID,
+         IndicatorName,
+         AreaTypeID,
+         AreaTypeName,
+  ) %>%
+  distinct()
+
+# find indicators which are available for Ward, LTLA, UTLA, and Region
+inds_all_area_types <- ind_and_area_data %>%
+  filter(IndicatorID %in% subset(ind_and_area_data,AreaTypeName == "Ward",IndicatorID)$IndicatorID
+         & IndicatorID %in% subset(ind_and_area_data,AreaTypeName == "Upper tier local authorities (post 4/21)",IndicatorID)$IndicatorID
+         & IndicatorID %in% subset(ind_and_area_data,AreaTypeName == "Lower tier local authorities (post 4/21)",IndicatorID)$IndicatorID
+         & IndicatorID %in% subset(ind_and_area_data,AreaTypeName == "Government Office Region",IndicatorID)$IndicatorID
+  )
 ```
 
 
 ## Selection
-The following indicators are available for Ward, LTLA, UTLA, and Region, and give us something interesting wo work with
+The following indicators are available for Ward, LTLA, UTLA, and Region, and give us something interesting to work with
 
 IID     | Indicator
 --------|------------------------------------------------------------------------------------
 93106   | Reception: Prevalence of overweight (including obesity), 3-years data combined
 93108   | Year 6: Prevalence of overweight (including obesity), 3-years data combined
 93553   | Deprivation score (IMD 2019)
-
-# READ
-```{r}
-# Define the indicator ID's that we care about
-iwca <- c(93106, 93108, 93553)
-
-# Define the area type ID's that we care about
-atwca <- c(6,8,401,402)
-
-# Create a list with the indicators and area types (required to create the cross arg's, which is required for map2)
-argList <- list(IndicatorID = iwca, AreaTypeID = atwca)
-
-# Create a cross argument tibble, listing every possible combination of the two variables, (which is required for map2)
-crossArg <- cross_df(argList)
-
-# create a simplified version of the fingertips function, stating that we'll pass in area type ID as the 1st parameter, and indicatorID as the 2nd 
-fn_ftd <- function(aty, iid){
-  fingertips_data(AreaTypeID = aty, IndicatorID =iid,)
-}
-
-myData <- map2_dfr(crossArg$AreaTypeID, crossArg$IndicatorID, fn_ftd)
-
-ft_data <- myData %>% 
-  select(IndicatorID, 
-         IndicatorName,
-         ParentCode,
-         ParentName,
-         AreaType, 
-         AreaCode, 
-         AreaName, 
-         Timeperiod, 
-         Value, 
-         TimeperiodSortable) %>% 
-  distinct()
-```
-
-
-```{r}
-# Define the indicator ID's that we care about
-iwca <- c(93106, 93108, 93553)
-
-# Define the area type ID's that we care about
-atwca2 <- c(8,401,402)
-
-# Create a list with the indicators and area types (required to create the cross arg's, which is required for map2)
-argList2 <- list(IndicatorID = iwca, AreaTypeID = atwca2)
-
-# Create a cross argument tibble, listing every possible combination of the two variables, (which is required for map2)
-crossArg2 <- cross_df(argList2)
-myData2 <- map2_dfr(crossArg2$AreaTypeID, crossArg2$IndicatorID, fn_ftd)
-
-ft_data2 <- myData2 %>% 
-  select(IndicatorID, 
-         IndicatorName,
-         ParentCode,
-         ParentName,
-         AreaType, 
-         AreaCode, 
-         AreaName, 
-         Timeperiod, 
-         Value, 
-         TimeperiodSortable) %>% 
-  distinct()
-```
-
 
