@@ -13,7 +13,7 @@ library(purrr)
 
 
 ## Selection
-The following indicators are available for Ward, LTLA, UTLA, and Region, and give us something interesting wo work with
+The following indicators are available for Ward, LTLA, UTLA, and Region, and give us something interesting to work with
 
 IID     | Indicator
 --------|------------------------------------------------------------------------------------
@@ -39,6 +39,7 @@ iwca <- c(93106, 93108, 93553)
 atwca <- c(6,8,401,402)
 ```
 
+
 ## Create the argument tibble for purrr::map2_dfr
 purrr::map2_dfr takes two arguments, in this example IndicatorID and AreaTypeID. We need to supply a table with every combination of those two arguments that we want to be iterated over.
 ```{r}
@@ -46,13 +47,14 @@ purrr::map2_dfr takes two arguments, in this example IndicatorID and AreaTypeID.
 argList <- list(IndicatorID = iwca, AreaTypeID = atwca)
 
 # Create a cross argument tibble, listing every possible combination of the two variables, (which is required for map2)
-crossArg <- cross_df(argList)
+crossArg <- cross_df(argList) 
+
+(crossArg)
 ```
 
 ## Create function
 The purrr::map2_dfr function wants to be supplied with two arguments, in the correct order.
 For the sake of simplicity, we'll create a simplified version of the fingertips_data function, stating that we'll pass in area type ID as the 1st argument, and indicatorID as the 2nd
-
 ```{r}
 fn_ftd <- function(aty, iid){
   fingertips_data(AreaTypeID = aty, IndicatorID =iid,)
@@ -60,11 +62,15 @@ fn_ftd <- function(aty, iid){
 ```
 
 
-# READ
+# READ AND TRANSFORM
+## Query Fingertips for the data
 ```{r}
-myData <- map2_dfr(crossArg$AreaTypeID, crossArg$IndicatorID, fn_ftd)
+ft_data_raw <- map2_dfr(crossArg$AreaTypeID, crossArg$IndicatorID, fn_ftd)
+```
 
-ft_data <- myData %>% 
+## Transform
+```{r}
+ft_data <- ft_data_raw %>% 
   select(IndicatorID, 
          IndicatorName,
          ParentCode,
