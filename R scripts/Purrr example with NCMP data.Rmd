@@ -47,9 +47,9 @@ purrr::map2_dfr takes two arguments, in this example IndicatorID and AreaTypeID.
 argList <- list(IndicatorID = iwca, AreaTypeID = atwca)
 
 # Create a cross argument tibble, listing every possible combination of the two variables, (which is required for map2)
-crossArg <- cross_df(argList) 
+crossArg <- cross_df(argList)  
 
-(crossArg)
+(crossArg) 
 ```
 
 ## Create function
