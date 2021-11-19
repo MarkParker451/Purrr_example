@@ -4,15 +4,20 @@ author: "MP"
 date: "19/11/2021"
 output: html_document
 ---
+# PURPOSE
+A worked example of using purrr mapping functions to build a data frame out of multiple iterations over a function.
+This example maps over the fingertips_data function using thress indicator ID's, for four area types
 
-```{r}
-library(fingertipsR)
-library(dplyr)
-library(purrr)
-```
+# METHODOLOGY
+## Workflow
+- define the indicators we care about
+- define the area types we care about
+- create a cross argument dataframe with every combination of indicatorID/AreaTypeID
+- create a simplified form of the fingertips_data function
+- use purrr::map2_dfr to iterate over the combinations, and build a single data frame
 
 
-## Selection
+## Indicator and Area type selection
 The following indicators are available for Ward, LTLA, UTLA, and Region, and give us something interesting to work with
 
 IID     | Indicator
@@ -28,6 +33,15 @@ AreaTypeID      | AreaType
 8               | Ward
 401             | LTLA
 402             | UTLA
+
+
+# SETUP
+## Attach packages
+```{r}
+library(fingertipsR)
+library(dplyr)
+library(purrr)
+```
 
 
 ## Define constants
@@ -48,8 +62,6 @@ argList <- list(IndicatorID = iwca, AreaTypeID = atwca)
 
 # Create a cross argument tibble, listing every possible combination of the two variables, (which is required for map2)
 crossArg <- cross_df(argList)  
-
-(crossArg) 
 ```
 
 ## Create function
@@ -60,6 +72,8 @@ fn_ftd <- function(aty, iid){
   fingertips_data(AreaTypeID = aty, IndicatorID =iid,)
 }
 ```
+
+
 
 
 # READ AND TRANSFORM
