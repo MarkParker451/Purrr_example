@@ -1,0 +1,79 @@
+---
+title: "Purrr example using NCMP data"
+author: "MP"
+date: "19/11/2021"
+output: html_document
+---
+
+```{r}
+library(fingertipsR)
+library(dplyr)
+library(purrr)
+```
+
+
+## Selection
+The following indicators are available for Ward, LTLA, UTLA, and Region, and give us something interesting wo work with
+
+IID     | Indicator
+--------|------------------------------------------------------------------------------------
+93106   | Reception: Prevalence of overweight (including obesity), 3-years data combined
+93108   | Year 6: Prevalence of overweight (including obesity), 3-years data combined
+93553   | Deprivation score (IMD 2019)
+
+
+AreaTypeID      | AreaType
+----------------|-----------
+6               | GOR
+8               | Ward
+401             | LTLA
+402             | UTLA
+
+
+## Define constants
+```{r}
+# Define the indicator ID's that we care about
+iwca <- c(93106, 93108, 93553)
+
+# Define the area type ID's that we care about
+atwca <- c(6,8,401,402)
+```
+
+## Create the argument tibble for purrr::map2_dfr
+purrr::map2_dfr takes two arguments, in this example IndicatorID and AreaTypeID. We need to supply a table with every combination of those two arguments that we want to be iterated over.
+```{r}
+# Create a list with the indicators and area types (required to create the cross arg's, which is required for map2)
+argList <- list(IndicatorID = iwca, AreaTypeID = atwca)
+
+# Create a cross argument tibble, listing every possible combination of the two variables, (which is required for map2)
+crossArg <- cross_df(argList)
+```
+
+## Create function
+The purrr::map2_dfr function wants to be supplied with two arguments, in the correct order.
+For the sake of simplicity, we'll create a simplified version of the fingertips_data function, stating that we'll pass in area type ID as the 1st argument, and indicatorID as the 2nd
+
+```{r}
+fn_ftd <- function(aty, iid){
+  fingertips_data(AreaTypeID = aty, IndicatorID =iid,)
+}
+```
+
+
+# READ
+```{r}
+myData <- map2_dfr(crossArg$AreaTypeID, crossArg$IndicatorID, fn_ftd)
+
+ft_data <- myData %>% 
+  select(IndicatorID, 
+         IndicatorName,
+         ParentCode,
+         ParentName,
+         AreaType, 
+         AreaCode, 
+         AreaName, 
+         Timeperiod, 
+         Value, 
+         TimeperiodSortable) %>% 
+  distinct()
+```
