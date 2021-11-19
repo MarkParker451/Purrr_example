@@ -2,8 +2,15 @@
 title: "Untitled"
 output: html_document
 ---
-# PURPOSE
+# PURPOSE 
 The only purpose of this script is to find a bunch of indicators that I can use in a purrr worked example.
+
+# METHODOLOGY
+- get the list of indicators by area type
+- get the list of unique indicators
+- join them
+- filter to find those indicators which area available for Ward, LTLA, UTLA, and Region
+- eyeball the result to select some indicators to play with
 
 
 ```{r}
