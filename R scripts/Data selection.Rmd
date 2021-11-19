@@ -27,7 +27,7 @@ ind_and_area_data <- inds_by_area %>%
          AreaTypeID,
          AreaTypeName,
   ) %>%
-  distinct()
+  distinct() 
 
 # find indicators which are available for Ward, LTLA, UTLA, and Region
 inds_all_area_types <- ind_and_area_data %>%
